@@ -6,7 +6,6 @@ import com.example.journalapp.feature_note.domain.repository.NoteRepository
 class DeleteNoteUseCase(
     private val repository: NoteRepository
 ) {
-    //se executa direct cand se apeleaza clasa
     suspend operator fun invoke(note: Note){
         repository.deleteNote(note)
     }

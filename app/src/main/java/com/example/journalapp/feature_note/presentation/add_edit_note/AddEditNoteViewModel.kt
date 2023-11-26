@@ -1,5 +1,6 @@
 package com.example.journalapp.feature_note.presentation.add_edit_note
 
+import android.util.Log
 import androidx.compose.runtime.State
 import androidx.compose.runtime.mutableStateOf
 import androidx.lifecycle.SavedStateHandle
@@ -20,6 +21,13 @@ class AddEditNoteViewModel @Inject constructor(
     savedStateHandle: SavedStateHandle
 ) : ViewModel() {
 
+//    private val _state = mutableStateOf(NotesState())
+//    val state: State<NotesState> = _state
+
+    private val _noteDetails = mutableStateOf<Note?>(null)
+    val noteDetails: State<Note?> = _noteDetails
+
+
     private val _noteText = mutableStateOf(
         NoteTextState(
             hint = "Enter Text..."
@@ -34,16 +42,25 @@ class AddEditNoteViewModel @Inject constructor(
 
     init {
         savedStateHandle.get<Int>("noteId")?.let { noteId ->
-            if (noteId != -1) {
+
                 viewModelScope.launch {
                     notesUseCases.getNote(noteId)?.also { note ->
+                        Log.d("NoteDetails", "Received note: $note")
                         currentNoteId = note.id
+                        Log.d("currentnoteid", "Received note: $note")
                         _noteText.value = noteText.value.copy(
                             text = note.title,
                             isHintVisible = false
                         )
+                        _noteDetails.value = noteDetails.value?.copy(
+                            title = note.title,
+                            photo = note.photo,
+                            tags = note.tags,
+                            id = note.id,
+                            date = note.date
+                        )
                     }
-                }
+
             }
         }
     }
@@ -86,9 +103,21 @@ class AddEditNoteViewModel @Inject constructor(
             }
 
             is AddEditNoteEvent.DeleteNote -> {
-//                viewModelScope.launch {
-//                    notesUseCases.deleteNote(event)
-//                }
+                viewModelScope.launch {
+                    try {
+                        event.note?.let {
+                            noteDetails.value?.let { it1 -> notesUseCases.deleteNote(it1) }
+                            _eventFlow.emit(UiEvent.NavigateBack)
+                            Log.d("AddEditNoteViewModel", "Deleting note: ${event.note}")
+                        }
+                    } catch (e: Exception) {
+                        _eventFlow.emit(
+                            UiEvent.ShowSnackbar(
+                                message = "Error deleting note: ${e.message}"
+                            )
+                        )
+                    }
+                }
             }
         }
     }
@@ -96,5 +125,6 @@ class AddEditNoteViewModel @Inject constructor(
     sealed class UiEvent {
         data class ShowSnackbar(val message: String) : UiEvent()
         object SaveNote : UiEvent()
+        object NavigateBack : UiEvent()
     }
 }

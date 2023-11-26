@@ -8,7 +8,7 @@ data class Note(
     val title: String,
     val date: Long,
     val photo: String?,
-    val tags: String?,
+    val tags: List<String?>?,
     @PrimaryKey
     val id: Int? = null
 )

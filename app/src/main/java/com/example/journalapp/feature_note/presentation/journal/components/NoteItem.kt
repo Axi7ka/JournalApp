@@ -16,8 +16,7 @@ import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.unit.dp
 import com.example.journalapp.feature_note.domain.module.Note
-import java.text.SimpleDateFormat
-import java.util.Locale
+import com.example.journalapp.feature_note.presentation.util.formatDate
 
 
 @Composable
@@ -27,12 +26,11 @@ fun NoteItem(
 ) {
 
     val formattedDate = remember {
-        val dateFormat = SimpleDateFormat("dd/MM/yyyy HH:mm:ss", Locale.getDefault())
-        dateFormat.format(note.date)
+        formatDate(note.date)
     }
 
     Box(
-        modifier = modifier.background(Color.Blue)
+        modifier = modifier.background(Color.White)
     ) {
         Column(
             modifier = Modifier
@@ -52,7 +50,17 @@ fun NoteItem(
                 maxLines = 3,
                 overflow = TextOverflow.Ellipsis
             )
+            Spacer(modifier = Modifier.height(8.dp))
+            note.photo?.let {
+                ImageItem(
+                    imageUrl = note.photo,
+                    entry = note
+                )
+            }
+            Spacer(modifier = Modifier.height(8.dp))
+            note.tags?.let { TagList(tags = it) }
         }
     }
 
 }
+

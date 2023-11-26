@@ -1,6 +1,7 @@
 package com.example.journalapp.feature_note.presentation.journal
 
 import android.annotation.SuppressLint
+import android.util.Log
 import androidx.compose.animation.AnimatedVisibility
 import androidx.compose.animation.fadeIn
 import androidx.compose.animation.fadeOut
@@ -111,6 +112,7 @@ fun NotesScreen(
             Spacer(modifier = Modifier.height(16.dp))
             LazyColumn(modifier = Modifier.fillMaxSize()) {
                 items(state.notes) { note ->
+                    Spacer(modifier = Modifier.height(16.dp))
                     NoteItem(
                         note = note,
                         modifier = Modifier
@@ -127,6 +129,7 @@ fun NotesScreen(
                     Spacer(modifier = Modifier.height(16.dp))
                 }
             }
+            Log.d("NotesScreen", "Notes: ${state.notes}")
         }
     }
 }
