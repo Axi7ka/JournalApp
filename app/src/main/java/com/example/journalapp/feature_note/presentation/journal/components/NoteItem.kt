@@ -10,9 +10,9 @@ import androidx.compose.foundation.layout.padding
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
-import androidx.compose.runtime.remember
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.layout.ContentScale
 import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.unit.dp
 import com.example.journalapp.feature_note.domain.module.Note
@@ -24,11 +24,6 @@ fun NoteItem(
     note: Note,
     modifier: Modifier = Modifier
 ) {
-
-    val formattedDate = remember {
-        formatDate(note.date)
-    }
-
     Box(
         modifier = modifier.background(Color.White)
     ) {
@@ -37,8 +32,9 @@ fun NoteItem(
                 .fillMaxSize()
                 .padding(16.dp)
         ) {
+            Spacer(modifier = Modifier.height(4.dp))
             Text(
-                text = formattedDate,
+                text = formatDate(note.date),
                 style = MaterialTheme.typography.bodySmall,
                 color = Color.Gray,
             )
@@ -50,15 +46,22 @@ fun NoteItem(
                 maxLines = 3,
                 overflow = TextOverflow.Ellipsis
             )
-            Spacer(modifier = Modifier.height(8.dp))
-            note.photo?.let {
+            if (!note.photo.isNullOrEmpty() && note.photo.any { it.isNotBlank() }) {
+                Spacer(modifier = Modifier.height(8.dp))
                 ImageItem(
-                    imageUrl = note.photo,
-                    entry = note
+                    imageUrl = note.photo.first(),
+                    entry = note,
+                    contentScale = ContentScale.Crop,
+                    height = 100.dp
                 )
             }
-            Spacer(modifier = Modifier.height(8.dp))
-            note.tags?.let { TagList(tags = it) }
+            if (!note.tags.isNullOrEmpty() && note.tags.any { it.isNotBlank() }) {
+                note.tags.let {
+                    Spacer(modifier = Modifier.height(8.dp))
+                    TagList(tags = it)
+                }
+            }
+            Spacer(modifier = Modifier.height(4.dp))
         }
     }
 

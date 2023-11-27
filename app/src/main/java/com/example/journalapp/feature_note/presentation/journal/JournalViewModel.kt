@@ -46,7 +46,7 @@ class JournalViewModel @Inject constructor(
         }
     }
 
-    private fun getNotes(notesOrder: NoteOrder){
+    private fun getNotes(notesOrder: NoteOrder) {
         gteNotesJob?.cancel()
         gteNotesJob = notesUseCases.getNotes(notesOrder)
             .onEach { notes ->

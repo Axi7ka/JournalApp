@@ -5,8 +5,10 @@ import android.util.Log
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
+import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
+import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.ArrowBack
@@ -27,42 +29,37 @@ import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.unit.dp
+import androidx.hilt.navigation.compose.hiltViewModel
 import androidx.navigation.NavController
 import com.example.journalapp.feature_note.presentation.add_edit_note.components.TransparentHintTextField
+import com.example.journalapp.feature_note.presentation.util.formatDate
 import kotlinx.coroutines.flow.collectLatest
 
 @SuppressLint("UnusedMaterial3ScaffoldPaddingParameter")
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
-fun AddEditNoteScreen(
+fun AddNoteScreen(
     navController: NavController,
-    viewModel: AddEditNoteViewModel,
+    viewModel: AddNoteViewModel = hiltViewModel()
 ) {
     val textState = viewModel.noteText.value
     val scaffoldState = remember { SnackbarHostState() }
 
-
     LaunchedEffect(key1 = true) {
         viewModel.eventFlow.collectLatest { event ->
             when (event) {
-                is AddEditNoteViewModel.UiEvent.ShowSnackbar -> {
+                is AddNoteViewModel.UiEvent.ShowSnackBar -> {
                     scaffoldState.showSnackbar(
                         message = event.message
                     )
                 }
 
-                is AddEditNoteViewModel.UiEvent.SaveNote -> {
-                    navController.popBackStack()
-                }
-
-                is AddEditNoteViewModel.UiEvent.NavigateBack -> {
+                is AddNoteViewModel.UiEvent.SaveNote -> {
                     navController.popBackStack()
                 }
             }
         }
     }
-
-    Log.d("AddEditNoteScreen", "Initial textState: ${textState.text}")
 
     Scaffold(
         snackbarHost = { SnackbarHost(scaffoldState) },
@@ -105,7 +102,7 @@ fun AddEditNoteScreen(
                 ) {
                     IconButton(
                         onClick = {
-                            viewModel.onEvent(AddEditNoteEvent.SaveNote)
+                            viewModel.onEvent(AddNoteEvent.SaveNote)
                         },
                     ) {
                         Icon(
@@ -115,7 +112,7 @@ fun AddEditNoteScreen(
                     }
                     IconButton(
                         onClick = {
-                            viewModel.onEvent(AddEditNoteEvent.DeleteNote(viewModel.noteDetails))
+                            navController.popBackStack()
                         },
                     ) {
                         Icon(
@@ -125,30 +122,27 @@ fun AddEditNoteScreen(
                     }
                 }
             }
+            Spacer(modifier = Modifier.height(8.dp))
             Text(
-                text = "formattedDate",
-                style = MaterialTheme.typography.bodySmall,
+                text = formatDate(System.currentTimeMillis()),
+                style = MaterialTheme.typography.bodyMedium,
                 color = Color.Gray,
             )
-
+            Spacer(modifier = Modifier.height(8.dp))
             TransparentHintTextField(
                 text = textState.text,
                 hint = textState.hint,
 
                 onValueChange = {
-                    viewModel.onEvent(AddEditNoteEvent.EnteredText(it))
-
-                    // Log the text when it changes
-                    Log.d("AddEditNoteScreen", "Text changed: $it")
+                    viewModel.onEvent(AddNoteEvent.EnteredText(it))
+                    Log.d("AddNoteScreen", "Text changed: $it")
                 },
                 onFocusChange = {
-                    viewModel.onEvent(AddEditNoteEvent.ChangeTextFocus(it))
-
-                    // Log the focus change
-                    Log.d("AddEditNoteScreen", "Focus changed: $it")
+                    viewModel.onEvent(AddNoteEvent.ChangeTextFocus(it))
+                    Log.d("AddNoteScreen", "Focus changed: $it")
                 },
                 isHintVisible = textState.isHintVisible,
-                textStyle = MaterialTheme.typography.bodyMedium
+                textStyle = MaterialTheme.typography.titleLarge
             )
         }
     }

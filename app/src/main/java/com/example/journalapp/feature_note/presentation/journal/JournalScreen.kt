@@ -37,21 +37,21 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
 import androidx.compose.ui.draw.shadow
 import androidx.compose.ui.unit.dp
+import androidx.hilt.navigation.compose.hiltViewModel
 import androidx.navigation.NavController
 import com.example.journalapp.feature_note.presentation.journal.components.NoteItem
 import com.example.journalapp.feature_note.presentation.journal.components.OrderSection
 import com.example.journalapp.feature_note.presentation.util.Screen
 
-@SuppressLint("UnusedMaterial3ScaffoldPaddingParameter")
 @OptIn(ExperimentalMaterial3Api::class)
+@SuppressLint("UnusedMaterial3ScaffoldPaddingParameter")
 @Composable
-fun NotesScreen(
+fun JournalScreen(
     navController: NavController,
-    viewModel: JournalViewModel
+    viewModel: JournalViewModel = hiltViewModel()
 ) {
     val state = viewModel.state.value
     val scaffoldState = remember { SnackbarHostState() }
-    //val scope = rememberCoroutineScope()
 
     Scaffold(
         snackbarHost = { SnackbarHost(scaffoldState) }) {
@@ -84,7 +84,7 @@ fun NotesScreen(
                     }
                     IconButton(
                         onClick = {
-                            navController.navigate(Screen.AddEditNoteScreen.route)
+                            navController.navigate(Screen.AddNoteScreen.route)
                         },
                     ) {
                         Icon(
@@ -120,8 +120,9 @@ fun NotesScreen(
                             .shadow(10.dp, RoundedCornerShape(10.dp))
                             .clip(RoundedCornerShape(10.dp))
                             .clickable {
+                                Log.d("NoteId", "Clicked note with ID: ${note.id}")
                                 navController.navigate(
-                                    Screen.AddEditNoteScreen.route +
+                                    Screen.NoteDetailsScreen.route +
                                             "?noteId=${note.id}"
                                 )
                             },

@@ -1,6 +1,7 @@
 package com.example.journalapp.feature_note.presentation.util
 
 sealed class Screen(val route: String) {
-    object NotesScreen: Screen("notes_screen")
-    object AddEditNoteScreen: Screen("add_edit_note_screen")
+    object JournalScreen: Screen("notes_screen")
+    object AddNoteScreen: Screen("add_edit_note_screen")
+    object NoteDetailsScreen: Screen("note_details_screen")
 }

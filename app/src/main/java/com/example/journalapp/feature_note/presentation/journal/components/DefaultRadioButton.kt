@@ -24,7 +24,8 @@ fun DefaultRadioButton(
         modifier = modifier,
         verticalAlignment = Alignment.CenterVertically
     ) {
-        RadioButton(selected = isClicked ,
+        RadioButton(
+            selected = isClicked,
             onClick = onClick,
             colors = RadioButtonDefaults.colors(
                 selectedColor = Color.Black,

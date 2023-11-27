@@ -2,7 +2,7 @@ package com.example.journalapp.feature_note.data.utils
 
 import androidx.room.TypeConverter
 
-class Converter{
+class Converter {
     @TypeConverter
     fun fromString(value: String?): List<String>? {
         return value?.split(",")?.map { it.trim() }

@@ -14,9 +14,11 @@ class NoteRepositoryImpl(
     override fun getNotes(): Flow<List<Note>> {
         return dao.getNotes().onEach { notes ->
             Log.d("NoteRepositoryImpl", "Received ${notes.size} notes from the database")
-            // Log individual notes if needed
             notes.forEachIndexed { index, note ->
-                Log.d("NoteRepositoryImpl", "Note $index: ${note.title}, ${note.date}, ${note.photo}, ${note.tags}")
+                Log.d(
+                    "NoteRepositoryImpl",
+                    "Note $index: ${note.title}, ${note.date}, ${note.photo}, ${note.tags}"
+                )
             }
         }
     }
@@ -24,7 +26,10 @@ class NoteRepositoryImpl(
     override suspend fun getNoteById(id: Int): Note? {
         val note = dao.getNoteById(id)
         if (note != null) {
-            Log.d("NoteRepositoryImpl", "Retrieved note by ID: ${note.title}, ${note.date}, ${note.photo}, ${note.tags}")
+            Log.d(
+                "NoteRepositoryImpl",
+                "Retrieved note by ID: ${note.title}, ${note.date}, ${note.photo}, ${note.tags}"
+            )
         } else {
             Log.d("NoteRepositoryImpl", "Note with ID $id not found")
         }
@@ -33,11 +38,17 @@ class NoteRepositoryImpl(
 
     override suspend fun insertNote(note: Note) {
         dao.insertNote(note)
-        Log.d("NoteRepositoryImpl", "Inserted note: ${note.title}, ${note.date}, ${note.photo}, ${note.tags}")
+        Log.d(
+            "NoteRepositoryImpl",
+            "Inserted note: ${note.title}, ${note.date}, ${note.photo}, ${note.tags}"
+        )
     }
 
     override suspend fun deleteNote(note: Note) {
         dao.deleteNote(note)
-        Log.d("NoteRepositoryImpl", "Deleted note: ${note.title}, ${note.date}, ${note.photo}, ${note.tags}")
+        Log.d(
+            "NoteRepositoryImpl",
+            "Deleted note: ${note.title}, ${note.date}, ${note.photo}, ${note.tags}"
+        )
     }
 }

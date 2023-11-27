@@ -10,7 +10,6 @@ import com.example.journalapp.feature_note.domain.use_case.AddNoteUseCase
 import com.example.journalapp.feature_note.domain.use_case.DeleteNoteUseCase
 import com.example.journalapp.feature_note.domain.use_case.GetNoteUseCase
 import com.example.journalapp.feature_note.domain.use_case.GetNotesUseCase
-import com.example.journalapp.feature_note.domain.use_case.NoteDetailsUseCases
 import com.example.journalapp.feature_note.domain.use_case.NotesUseCases
 import dagger.Module
 import dagger.Provides
@@ -29,7 +28,8 @@ object AppModule {
             app,
             NoteDatabase::class.java,
             NoteDatabase.DATABASE_NAME
-        )        .addCallback(NoteDatabaseCallback(app.applicationContext)) // Add the callback here
+        )
+            .addCallback(NoteDatabaseCallback(app.applicationContext))
             .build()
     }
 
@@ -37,14 +37,6 @@ object AppModule {
     @Singleton
     fun provideNoteRepository(db: NoteDatabase): NoteRepository {
         return NoteRepositoryImpl(db.noteDao)
-    }
-
-    @Provides
-    @Singleton
-    fun provideNoteDetailsUseCases(repository: NoteRepository): NoteDetailsUseCases{
-        return NoteDetailsUseCases(
-            deleteNote = DeleteNoteUseCase(repository)
-        )
     }
 
     @Provides
@@ -57,5 +49,4 @@ object AppModule {
             getNote = GetNoteUseCase(repository)
         )
     }
-
 }
