@@ -27,10 +27,12 @@ import androidx.compose.runtime.remember
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.layout.ContentScale
 import androidx.compose.ui.unit.dp
 import androidx.hilt.navigation.compose.hiltViewModel
 import androidx.navigation.NavController
 import com.example.journalapp.feature_note.presentation.add_edit_note.AddNoteEvent
+import com.example.journalapp.feature_note.presentation.journal.components.ImageItem
 import com.example.journalapp.feature_note.presentation.journal.components.TagList
 import com.example.journalapp.feature_note.presentation.note_details.components.CenteredCircularProgressIndicator
 import com.example.journalapp.feature_note.presentation.note_details.components.ImageCarousel
@@ -140,19 +142,25 @@ fun NoteDetailsScreen(
                     )
                 }
                 if (!state.note.photo.isNullOrEmpty() && state.note.photo.any { it.isNotBlank() }) {
-                    Spacer(modifier = Modifier.height(16.dp))
-//                    ImageItem(
-//                        imageUrl = photo.first(),
-//                        entry = state.note,
-//                        contentScale = ContentScale.FillWidth,
-//                        height = 200.dp
-//                    )
-                    ImageCarousel(
-                        entry = state.note
-                    )
+                    if (state.note.photo.size == 1) {
+                        Spacer(modifier = Modifier.height(16.dp))
+                        ImageItem(
+                            imageUrl = state.note.photo.first(),
+                            entry = state.note,
+                            contentScale = ContentScale.FillWidth,
+                            height = 200.dp
+                        )
+                    } else if (state.note.photo.size > 1) {
+                        Spacer(modifier = Modifier.height(16.dp))
+                        ImageCarousel(
+                            entry = state.note
+                        )
+                    }
                 }
-                Spacer(modifier = Modifier.height(16.dp))
-                state.note.tags?.let { TagList(tags = it) }
+                if (!state.note.tags.isNullOrEmpty() && state.note.tags.any { it.isNotBlank() }) {
+                    Spacer(modifier = Modifier.height(16.dp))
+                    state.note.tags.let { TagList(tags = it) }
+                }
             }
         }
     } else {

@@ -2,7 +2,7 @@ package com.example.journalapp.feature_note.presentation.note_details.components
 
 import androidx.compose.foundation.ExperimentalFoundationApi
 import androidx.compose.foundation.Image
-import androidx.compose.foundation.background
+import androidx.compose.foundation.border
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
@@ -16,7 +16,6 @@ import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.pager.HorizontalPager
 import androidx.compose.foundation.pager.rememberPagerState
 import androidx.compose.foundation.shape.RoundedCornerShape
-import androidx.compose.material3.MaterialTheme
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.rememberCoroutineScope
 import androidx.compose.ui.Modifier
@@ -55,7 +54,7 @@ fun ImageCarousel(
                 Box(
                     modifier = modifier
                         .fillMaxWidth()
-                        .clip(shape = RoundedCornerShape(12.dp)) // Apply the corner radius here
+                        .clip(shape = RoundedCornerShape(12.dp))
                 ) {
                     val painter = rememberImagePainter(
                         data = entry.photo[page],
@@ -66,7 +65,6 @@ fun ImageCarousel(
                                 .build()
                         }
                     )
-
                     Image(
                         painter = painter,
                         contentDescription = null,
@@ -76,27 +74,41 @@ fun ImageCarousel(
                 }
             }
         }
-
         Row(
             modifier = Modifier
                 .fillMaxWidth()
-                .padding(8.dp),
+                .padding(top = 16.dp),
             horizontalArrangement = Arrangement.Center
         ) {
-            entry.photo?.size?.let {
-                repeat(it) { pageIndex ->
-                    val selected = pageIndex == pagerState.currentPage
-                    val color = if (selected) Color.Black else Color.Gray
-                    Box(
+            entry.photo?.forEachIndexed { index, imageUrl ->
+                val selected = index == pagerState.currentPage
+                Box(
+                    modifier = Modifier
+                        .size(80.dp)
+                        .padding(horizontal = 4.dp)
+                ) {
+                    Image(
+                        painter = rememberImagePainter(
+                            data = imageUrl,
+                            builder = {
+                                crossfade(true)
+                            }
+                        ),
+                        contentDescription = null,
+                        contentScale = ContentScale.Crop,
                         modifier = Modifier
-                            .size(16.dp)
-                            .background(color, MaterialTheme.shapes.small)
+                            .fillMaxSize()
+                            .clip(shape = RoundedCornerShape(8.dp))
+                            .border(
+                                width = if (selected) 2.dp else 0.dp,
+                                color = Color.Black,
+                                shape = RoundedCornerShape(8.dp)
+                            )
                             .clickable {
                                 coroutineScope.launch {
-                                    pagerState.animateScrollToPage(pageIndex)
+                                    pagerState.animateScrollToPage(index)
                                 }
                             }
-                            .padding(4.dp)
                     )
                 }
             }

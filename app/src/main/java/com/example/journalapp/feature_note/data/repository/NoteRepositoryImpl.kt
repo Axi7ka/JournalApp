@@ -4,6 +4,8 @@ import android.util.Log
 import com.example.journalapp.feature_note.data.data_source.NoteDao
 import com.example.journalapp.feature_note.domain.module.Note
 import com.example.journalapp.feature_note.domain.repository.NoteRepository
+import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.delay
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.onEach
 
@@ -24,16 +26,20 @@ class NoteRepositoryImpl(
     }
 
     override suspend fun getNoteById(id: Int): Note? {
-        val note = dao.getNoteById(id)
-        if (note != null) {
-            Log.d(
-                "NoteRepositoryImpl",
-                "Retrieved note by ID: ${note.title}, ${note.date}, ${note.photo}, ${note.tags}"
-            )
-        } else {
-            Log.d("NoteRepositoryImpl", "Note with ID $id not found")
+        return kotlinx.coroutines.withContext(Dispatchers.IO) {
+            delay(1000)
+
+            val note = dao.getNoteById(id)
+            if (note != null) {
+                Log.d(
+                    "NoteRepositoryImpl",
+                    "Retrieved note by ID: ${note.title}, ${note.date}, ${note.photo}, ${note.tags}"
+                )
+            } else {
+                Log.d("NoteRepositoryImpl", "Note with ID $id not found")
+            }
+            note
         }
-        return note
     }
 
     override suspend fun insertNote(note: Note) {
