@@ -9,6 +9,8 @@ import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
+import androidx.compose.foundation.rememberScrollState
+import androidx.compose.foundation.verticalScroll
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.ArrowBack
 import androidx.compose.material.icons.filled.Delete
@@ -48,6 +50,8 @@ fun NoteDetailsScreen(
     viewModel: NoteDetailsViewModel = hiltViewModel()
 ) {
     val scaffoldState = remember { SnackbarHostState() }
+    val scrollState = rememberScrollState()
+
 
     LaunchedEffect(key1 = true) {
         viewModel.eventFlow.collectLatest { event ->
@@ -127,39 +131,46 @@ fun NoteDetailsScreen(
                         }
                     }
                 }
-                Spacer(modifier = Modifier.height(8.dp))
-                Text(
-                    text = state.note.date.let { formatDate(it) },
-                    style = MaterialTheme.typography.bodyMedium,
-                    color = Color.Gray,
-                )
-                Spacer(modifier = Modifier.height(8.dp))
-                state.note.title.let { title ->
+                Column(
+                    modifier = Modifier
+                        .fillMaxSize()
+                        .verticalScroll(state = scrollState)
+                ) {
+                    Spacer(modifier = Modifier.height(8.dp))
+
                     Text(
-                        text = title,
-                        style = MaterialTheme.typography.headlineMedium,
-                        color = Color.Black,
+                        text = state.note.date.let { formatDate(it) },
+                        style = MaterialTheme.typography.bodyMedium,
+                        color = Color.Gray,
                     )
-                }
-                if (!state.note.photo.isNullOrEmpty() && state.note.photo.any { it.isNotBlank() }) {
-                    if (state.note.photo.size == 1) {
-                        Spacer(modifier = Modifier.height(16.dp))
-                        ImageItem(
-                            imageUrl = state.note.photo.first(),
-                            entry = state.note,
-                            contentScale = ContentScale.FillWidth,
-                            height = 200.dp
-                        )
-                    } else if (state.note.photo.size > 1) {
-                        Spacer(modifier = Modifier.height(16.dp))
-                        ImageCarousel(
-                            entry = state.note
+                    Spacer(modifier = Modifier.height(8.dp))
+                    state.note.title.let { title ->
+                        Text(
+                            text = title,
+                            style = MaterialTheme.typography.headlineMedium,
+                            color = Color.Black,
                         )
                     }
-                }
-                if (!state.note.tags.isNullOrEmpty() && state.note.tags.any { it.isNotBlank() }) {
-                    Spacer(modifier = Modifier.height(16.dp))
-                    state.note.tags.let { TagList(tags = it) }
+                    if (!state.note.photo.isNullOrEmpty() && state.note.photo.any { it.isNotBlank() }) {
+                        if (state.note.photo.size == 1) {
+                            Spacer(modifier = Modifier.height(16.dp))
+                            ImageItem(
+                                imageUrl = state.note.photo.first(),
+                                entry = state.note,
+                                contentScale = ContentScale.FillWidth,
+                                height = 200.dp
+                            )
+                        } else if (state.note.photo.size > 1) {
+                            Spacer(modifier = Modifier.height(16.dp))
+                            ImageCarousel(
+                                entry = state.note
+                            )
+                        }
+                    }
+                    if (!state.note.tags.isNullOrEmpty() && state.note.tags.any { it.isNotBlank() }) {
+                        Spacer(modifier = Modifier.height(16.dp))
+                        state.note.tags.let { TagList(tags = it) }
+                    }
                 }
             }
         }

@@ -10,6 +10,8 @@ import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
+import androidx.compose.foundation.rememberScrollState
+import androidx.compose.foundation.verticalScroll
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.ArrowBack
 import androidx.compose.material.icons.filled.Delete
@@ -44,6 +46,8 @@ fun AddNoteScreen(
 ) {
     val textState = viewModel.noteText.value
     val scaffoldState = remember { SnackbarHostState() }
+    val scrollState = rememberScrollState()
+
 
     LaunchedEffect(key1 = true) {
         viewModel.eventFlow.collectLatest { event ->
@@ -123,27 +127,33 @@ fun AddNoteScreen(
                 }
             }
             Spacer(modifier = Modifier.height(8.dp))
-            Text(
-                text = formatDate(System.currentTimeMillis()),
-                style = MaterialTheme.typography.bodyMedium,
-                color = Color.Gray,
-            )
-            Spacer(modifier = Modifier.height(8.dp))
-            TransparentHintTextField(
-                text = textState.text,
-                hint = textState.hint,
+            Column(
+                modifier = Modifier
+                    .fillMaxSize()
+                    .verticalScroll(state = scrollState)
+            ) {
+                Text(
+                    text = formatDate(System.currentTimeMillis()),
+                    style = MaterialTheme.typography.bodyMedium,
+                    color = Color.Gray,
+                )
+                Spacer(modifier = Modifier.height(8.dp))
+                TransparentHintTextField(
+                    text = textState.text,
+                    hint = textState.hint,
 
-                onValueChange = {
-                    viewModel.onEvent(AddNoteEvent.EnteredText(it))
-                    Log.d("AddNoteScreen", "Text changed: $it")
-                },
-                onFocusChange = {
-                    viewModel.onEvent(AddNoteEvent.ChangeTextFocus(it))
-                    Log.d("AddNoteScreen", "Focus changed: $it")
-                },
-                isHintVisible = textState.isHintVisible,
-                textStyle = MaterialTheme.typography.titleLarge
-            )
+                    onValueChange = {
+                        viewModel.onEvent(AddNoteEvent.EnteredText(it))
+                        Log.d("AddNoteScreen", "Text changed: $it")
+                    },
+                    onFocusChange = {
+                        viewModel.onEvent(AddNoteEvent.ChangeTextFocus(it))
+                        Log.d("AddNoteScreen", "Focus changed: $it")
+                    },
+                    isHintVisible = textState.isHintVisible,
+                    textStyle = MaterialTheme.typography.titleLarge
+                )
+            }
         }
     }
 }
